@@ -71,6 +71,24 @@
         color: #333;
         min-height: 1em;
       }
+
+      #restartBtn {
+        position: fixed;
+        left: 50%;
+        top: 55%;
+        transform: translate(-50%, -50%);
+        padding: 10px 22px;
+        font-size: 14px;
+        font-weight: 600;
+        border-radius: 999px;
+        border: none;
+        background: #ff5252;
+        color: #ffffff;
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.25);
+        cursor: pointer;
+        display: none;
+        z-index: 999;
+      }
     </style>
   </head>
   <body>
@@ -89,6 +107,8 @@
       <button id="saveNicknameBtn" type="button">저장</button>
       <span id="nicknameStatus" class="nickname-status"></span>
     </div>
+
+    <button id="restartBtn" type="button">다시하기</button>
 
     
         <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
@@ -112,6 +132,7 @@
 
       const canvas = document.getElementById("game");
       const ctx = canvas.getContext("2d");
+      const restartBtn = document.getElementById("restartBtn");
 
       const WIDTH = canvas.width;
       const HEIGHT = canvas.height;
@@ -439,6 +460,27 @@
           }
         }
       });
+
+      // 마우스 클릭으로 점프
+      canvas.addEventListener("mousedown", (e) => {
+        e.preventDefault();
+        handleJump();
+      });
+
+      // 터치로 점프 (모바일)
+      canvas.addEventListener("touchstart", (e) => {
+        e.preventDefault();
+        handleJump();
+      });
+
+      // 다시하기 버튼 클릭 시 게임 재시작
+      if (restartBtn) {
+        restartBtn.addEventListener("click", () => {
+          if (gameOver) {
+            resetGame();
+          }
+        });
+      }
 
       function checkCollision() {
         // 무적이면 충돌 무시
@@ -805,6 +847,11 @@
         drawRunner();
         drawScore();
         drawSymbolUI();
+
+        // 게임 상태에 따라 다시하기 버튼 표시/숨김
+        if (restartBtn) {
+          restartBtn.style.display = gameOver ? "inline-block" : "none";
+        }
 
         if (gameOver) {
           drawGameOver();
